@@ -25,6 +25,7 @@
 #include "FreeRTOS.h"
 
 /* USER CODE END Includes */
+
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 
@@ -161,25 +162,50 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line1 interrupt.
+  * @brief This function handles EXTI line4 interrupt.
   */
-void EXTI1_IRQHandler(void)
+void EXTI4_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
+  /* USER CODE BEGIN EXTI4_IRQn 0 */
 
-		if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1)!= RESET)    // 如果PA1的中断标志位被置位（=1），说明发生了中断
+		if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4)!= RESET)    // 如果PA1的中断标志位被置位（=1），说明发生了中断
 		{
-				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 				osSemaphoreRelease(binarySemHandle);
 		
-		}	
+		}		
 	
-	
-  /* USER CODE END EXTI1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
-  /* USER CODE BEGIN EXTI1_IRQn 1 */
+		
+  /* USER CODE END EXTI4_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
+  /* USER CODE BEGIN EXTI4_IRQn 1 */
 
-  /* USER CODE END EXTI1_IRQn 1 */
+  /* USER CODE END EXTI4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+		if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_5)!= RESET)    // 如果PA1的中断标志位被置位（=1），说明发生了中断
+		{
+				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5);
+				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
+				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
+				osSemaphoreRelease(binarySemHandle);
+		
+		}			
+	
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
