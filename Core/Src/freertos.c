@@ -37,6 +37,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+uint8_t col = 0;
+uint16_t current_row = 10;
+uint16_t current_col = 10;
 
 /* USER CODE END PD */
 
@@ -142,12 +145,18 @@ void Task_main_start(void *argument)
   /* Infinite loop */
   for(;;)
   {
+			if(current_row == 1 && current_col == 1)
+			{
+					HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+					current_row = 10;
+					current_col = 10;
+			}	
 
-  		for(uint8_t breath_val = 0 ;breath_val<100 ;breath_val++)
-    {
-      osDelay(60);
-      brightNess = sin(breath_val * (3.14159265/100));
-    }
+			if(current_row != 10 && current_col != 10 )
+			{
+					current_row = 10;
+					current_col = 10;
+			}				
       osDelay(1);
   }
   /* USER CODE END Task_main_start */
@@ -165,7 +174,7 @@ void vTaskScan(void *argument)
   /* USER CODE BEGIN vTaskScan */
 //	uint8_t key_val = 0;
 	uint16_t row_pins[4] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};  //行线数组
-	
+	uint16_t col_pins[4] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7};  //列线数组
 	
   /* Infinite loop */
   for(;;)
@@ -173,46 +182,36 @@ void vTaskScan(void *argument)
 		// 阻塞等待信号量（无限等待
 		if(osSemaphoreAcquire(binarySemHandle, osWaitForever) == osOK )
 		{
-				//动濁设置当前行高电平，其他行低电平 
+				//先设置当前行高电平，其他行低电平 
 				//Set the current row to a high level while keeping the others at a low level.
 						
 				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉低			
 			
-				for(uint8_t row = 0; row< 4; row++ )
+				for(uint8_t row = 0; row< 4; row++)
 				{
 
 						HAL_GPIO_WritePin(GPIOA, row_pins[row], GPIO_PIN_SET);	 // 仅当前行拉高  // Only when the current row rises
-						
+						osDelay(1);
 					
-						// 信号量触发，弿始扫揿
-						if(row == 0 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET)
+						for( col = 0; col< 4; col++)
 						{
-								HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-								break;
-						}			
+								if(HAL_GPIO_ReadPin(GPIOA, col_pins[col]) == GPIO_PIN_SET)
+								{
+										current_row = row;
+										current_col = col;
+										break;
+								}
+								
+						}
 						
-						if(row == 1 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET)
+						if(current_row != 10)
 						{
-								HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 								break;
-						}								
+						}
 						
+//						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉低			
+				
 				}
-			
-//		  static uint8_t count;
-//		  static uint8_t CurrState,PrevState;			
-//			
-//			count++;
-//			PrevState = CurrState;         // 存个桿  按下等于各个按键该有的忼，松手昿0
-//			CurrState = Key_GetState();		
-//			
-//			if( CurrState == 0 && PrevState != 0 )
-//			{
-//					Key_Num = PrevState ;
-//				
-//			}			
-//		
-//			osDelay(10);
 				
 		}	
   }
