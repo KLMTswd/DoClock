@@ -26,6 +26,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "arm_math.h"
+#include "key.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -162,7 +164,7 @@ void vTaskScan(void *argument)
 {
   /* USER CODE BEGIN vTaskScan */
 //	uint8_t key_val = 0;
-//	uint16_t row_pins[4] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};  //行线数组
+	uint16_t row_pins[4] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};  //行线数组
 	
 	
   /* Infinite loop */
@@ -171,27 +173,48 @@ void vTaskScan(void *argument)
 		// 阻塞等待信号量（无限等待
 		if(osSemaphoreAcquire(binarySemHandle, osWaitForever) == osOK )
 		{
+				//动濁设置当前行高电平，其他行低电平 
+				//Set the current row to a high level while keeping the others at a low level.
+						
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉低			
+			
 				for(uint8_t row = 0; row< 4; row++ )
 				{
-						//动�?�设置当前行高电平，其他行低电平 
-						//Set the current row to a high level while keeping the others at a low level.
-						
-//						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); // 所有行拉低
-//						HAL_GPIO_WritePin(GPIOA, row_pins[row], GPIO_PIN_SET);	 // 仅当前行拉高  // Only when the current row rises
+
+						HAL_GPIO_WritePin(GPIOA, row_pins[row], GPIO_PIN_SET);	 // 仅当前行拉高  // Only when the current row rises
 						
 					
 						// 信号量触发，弿始扫揿
-						if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET)
+						if(row == 0 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET)
 						{
 								HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 								break;
 						}			
 						
+						if(row == 1 && HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET)
+						{
+								HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+								break;
+						}								
+						
 				}
 			
-
+//		  static uint8_t count;
+//		  static uint8_t CurrState,PrevState;			
+//			
+//			count++;
+//			PrevState = CurrState;         // 存个桿  按下等于各个按键该有的忼，松手昿0
+//			CurrState = Key_GetState();		
+//			
+//			if( CurrState == 0 && PrevState != 0 )
+//			{
+//					Key_Num = PrevState ;
+//				
+//			}			
+//		
+//			osDelay(10);
+				
 		}	
-    osDelay(1);
   }
   /* USER CODE END vTaskScan */
 }

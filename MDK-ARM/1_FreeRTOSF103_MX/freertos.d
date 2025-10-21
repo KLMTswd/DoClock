@@ -42,3 +42,4 @@
 1_freertosf103_mx\freertos.o: ../Drivers/CMSIS/Include/core_cm3.h
 1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\string.h
 1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\math.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/key.h

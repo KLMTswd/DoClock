@@ -6,6 +6,7 @@
 "1_freertosf103_mx\stm32f1xx_it.o"
 "1_freertosf103_mx\stm32f1xx_hal_msp.o"
 "1_freertosf103_mx\stm32f1xx_hal_timebase_tim.o"
+"1_freertosf103_mx\key.o"
 "1_freertosf103_mx\stm32f1xx_hal_gpio_ex.o"
 "1_freertosf103_mx\stm32f1xx_hal.o"
 "1_freertosf103_mx\stm32f1xx_hal_rcc.o"
