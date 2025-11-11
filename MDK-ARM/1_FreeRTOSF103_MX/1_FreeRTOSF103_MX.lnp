@@ -1,8 +1,10 @@
 --cpu Cortex-M3
 "1_freertosf103_mx\startup_stm32f103xb.o"
+"1_freertosf103_mx\hal_usart.o"
 "1_freertosf103_mx\main.o"
 "1_freertosf103_mx\gpio.o"
 "1_freertosf103_mx\freertos.o"
+"1_freertosf103_mx\usart.o"
 "1_freertosf103_mx\stm32f1xx_it.o"
 "1_freertosf103_mx\stm32f1xx_hal_msp.o"
 "1_freertosf103_mx\stm32f1xx_hal_timebase_tim.o"
@@ -19,6 +21,7 @@
 "1_freertosf103_mx\stm32f1xx_hal_exti.o"
 "1_freertosf103_mx\stm32f1xx_hal_tim.o"
 "1_freertosf103_mx\stm32f1xx_hal_tim_ex.o"
+"1_freertosf103_mx\stm32f1xx_hal_uart.o"
 "1_freertosf103_mx\system_stm32f1xx.o"
 "1_freertosf103_mx\croutine.o"
 "1_freertosf103_mx\event_groups.o"

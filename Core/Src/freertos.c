@@ -116,8 +116,7 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Scan */
   ScanHandle = osThreadNew(vTaskScan, NULL, &Scan_attributes);
-	
-	
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -165,15 +164,23 @@ void vTaskScan(void *argument)
   /* Infinite loop */
   for(;;)
   {
-		// é˜»å¡ç­‰å¾…ä¿¡å·é‡ï¼ˆæ— é™ç­‰å¾…ï¼‰
-		if(osSemaphoreAcquire(binarySemHandle, osWaitForever) == osOK )
-		{
-				// ä¿¡å·é‡è§¦å‘ï¼Œå¼€å§‹æ‰«æ
-				if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_SET)
-				{
-						HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-				}	
-		}	
+		
+    // ³¢ÊÔ»ñÈ¡¶ş½øÖÆĞÅºÅÁ¿£¬µÈ´ıÊ±¼äÎªÎŞÏŞµÈ´ı
+    if(osSemaphoreAcquire(binarySemHandle, osWaitForever) == osOK )
+    {
+       
+   			// ĞÅºÅÁ¿»ñÈ¡³É¹¦£¬¿ªÊ¼É¨ÃèÁ÷³Ì
+        // ¶ÁÈ¡GPIOAµÄPIN_1Òı½Å×´Ì¬
+        if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_SET)
+        {
+            // Èç¹ûÒı½ÅÎª¸ßµçÆ½£¬½«LEDÒı½ÅÉèÖÃÎªµÍµçÆ½(µãÁÁLED)
+            HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+        }
+        // ×¢Òâ£ºÈç¹ûÒı½Å²»Îª¸ßµçÆ½£¬´Ë´¦Ã»ÓĞ¶ÔÓ¦µÄ´¦ÀíÂß¼­
+    }
+		
+		
+    // ÑÓÊ±1ºÁÃë£¬½µµÍCPUÊ¹ÓÃÂÊ
     osDelay(1);
   }
   /* USER CODE END vTaskScan */
