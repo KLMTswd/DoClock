@@ -27,6 +27,8 @@
 /* USER CODE BEGIN Includes */
 #include "arm_math.h"
 #include "key.h"
+#include "HAL_usart.h"
+#include "usart.h"
 
 /* USER CODE END Includes */
 
@@ -69,6 +71,13 @@ const osThreadAttr_t Scan_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
+/* Definitions for usartTask */
+osThreadId_t usartTaskHandle;
+const osThreadAttr_t usartTask_attributes = {
+  .name = "usartTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* Definitions for binarySem */
 osSemaphoreId_t binarySemHandle;
 const osSemaphoreAttr_t binarySem_attributes = {
@@ -82,6 +91,7 @@ const osSemaphoreAttr_t binarySem_attributes = {
 
 void Task_main_start(void *argument);
 void vTaskScan(void *argument);
+void vTaskusartTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -121,6 +131,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of Scan */
   ScanHandle = osThreadNew(vTaskScan, NULL, &Scan_attributes);
+
+  /* creation of usartTask */
+  usartTaskHandle = osThreadNew(vTaskusartTask, NULL, &usartTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -185,7 +198,7 @@ void vTaskScan(void *argument)
 				//先设置当前行高电平，其他行低电平 
 				//Set the current row to a high level while keeping the others at a low level.
 						
-				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉低			
+				HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉�?			
 			
 				for(uint8_t row = 0; row< 4; row++)
 				{
@@ -209,13 +222,35 @@ void vTaskScan(void *argument)
 								break;
 						}
 						
-//						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉低			
+//						HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET); //  所有行先拉�?			
 				
 				}
 				
 		}	
   }
   /* USER CODE END vTaskScan */
+}
+
+/* USER CODE BEGIN Header_vTaskusartTask */
+/**
+* @brief Function implementing the usartTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_vTaskusartTask */
+void vTaskusartTask(void *argument)
+{
+  /* USER CODE BEGIN vTaskusartTask */
+  HAL_usart_init(&huart3);
+
+  /* Infinite loop */
+  for(;;)
+  {
+    HAL_usart_send("Hello FreeRTOS!\r\n");
+		osDelay(1000);
+  }
+
+  /* USER CODE END vTaskusartTask */
 }
 
 /* Private application code --------------------------------------------------*/

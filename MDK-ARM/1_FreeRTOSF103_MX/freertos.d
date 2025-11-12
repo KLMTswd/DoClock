@@ -36,6 +36,7 @@
 1_freertosf103_mx\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 1_freertosf103_mx\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
 1_freertosf103_mx\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
+1_freertosf103_mx\freertos.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 1_freertosf103_mx\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h
 1_freertosf103_mx\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h
 1_freertosf103_mx\freertos.o: ../Drivers/CMSIS/DSP/Include/arm_math.h
@@ -43,3 +44,5 @@
 1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\string.h
 1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\math.h
 1_freertosf103_mx\freertos.o: ../Core/Inc/key.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/HAL_usart.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/usart.h
