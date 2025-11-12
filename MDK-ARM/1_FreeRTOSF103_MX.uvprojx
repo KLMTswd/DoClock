@@ -112,12 +112,12 @@
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments>-REMAP</SimDllArguments>
-          <SimDlgDll>DCM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pCM3</SimDlgDllArguments>
+          <SimDlgDll>DARMSTM.DLL</SimDlgDll>
+          <SimDlgDllArguments>-pSTM32F103C8</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
-          <TargetDlgDll>TCM.DLL</TargetDlgDll>
-          <TargetDlgDllArguments>-pCM3</TargetDlgDllArguments>
+          <TargetDlgDll>DARMSTM.DLL</TargetDlgDll>
+          <TargetDlgDllArguments>-pSTM32F103C8</TargetDlgDllArguments>
         </DllOption>
         <DebugOption>
           <OPTHX>
@@ -191,7 +191,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>1</useUlib>
+            <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -395,11 +395,6 @@
         <Group>
           <GroupName>Application/User/Core</GroupName>
           <Files>
-            <File>
-              <FileName>portmacro.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM3\portmacro.h</FilePath>
-            </File>
             <File>
               <FileName>FreeRTOSConfig.h</FileName>
               <FileType>5</FileType>

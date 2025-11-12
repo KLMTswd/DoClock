@@ -1,7 +1,7 @@
 #include "HAL_usart.h"
 #include "stm32f1xx_hal.h"
 #include "string.h"
-
+#include "usart.h"
 
 
 static UART_HandleTypeDef *g_huart = NULL;
@@ -38,9 +38,12 @@ void HAL_usart_send(char *str)
     // 检查UART句柄是否已初始化（不为空）
     if (g_huart != NULL)
     {
-        // 调用HAL库函数发送数据：参数依次为UART句柄、数据指针(转换为uint8_t*)、数据长度、超时时间(ms)
-        HAL_UART_Transmit(g_huart, (uint8_t *)str, strlen(str), 100);
+       // 调用HAL库函数发送数据：参数依次为UART句柄、数据指针(转换为uint8_t*)、数据长度、超时时间(ms)
+        HAL_UART_Transmit(g_huart, (uint8_t *)str, strlen(str), HAL_MAX_DELAY);
     }
     // 如果UART句柄为空，则不执行任何操作，避免空指针异常
 }
+
+/* USER CODE END 2 */
+
 

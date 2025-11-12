@@ -33,7 +33,7 @@
 "1_freertosf103_mx\cmsis_os2.o"
 "1_freertosf103_mx\heap_4.o"
 "1_freertosf103_mx\port.o"
---library_type=microlib --strict --scatter "1_FreeRTOSF103_MX\1_FreeRTOSF103_MX.sct"
+--strict --scatter "1_FreeRTOSF103_MX\1_FreeRTOSF103_MX.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "1_FreeRTOSF103_MX.map" -o 1_FreeRTOSF103_MX\1_FreeRTOSF103_MX.axf
