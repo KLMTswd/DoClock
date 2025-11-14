@@ -1,0 +1,9 @@
+1_freertosf103_mx\cjson.o: ..\Core\Src\cJSON.c
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\string.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\stdio.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\math.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\stdlib.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\float.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\limits.h
+1_freertosf103_mx\cjson.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\ctype.h
+1_freertosf103_mx\cjson.o: ../Core/Inc/cJSON.h

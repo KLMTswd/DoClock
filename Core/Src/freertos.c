@@ -28,6 +28,7 @@
 #include "arm_math.h"
 #include "HAL_usart.h"
 #include "usart.h"
+#include "esp8266.h"
 
 /* USER CODE END Includes */
 
@@ -74,6 +75,13 @@ const osThreadAttr_t usartTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for Onenet */
+osThreadId_t OnenetHandle;
+const osThreadAttr_t Onenet_attributes = {
+  .name = "Onenet",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* Definitions for binarySem */
 osSemaphoreId_t binarySemHandle;
 const osSemaphoreAttr_t binarySem_attributes = {
@@ -88,6 +96,7 @@ const osSemaphoreAttr_t binarySem_attributes = {
 void Task_main_start(void *argument);
 void vTaskScan(void *argument);
 void vTaskusartTask(void *argument);
+void vTaskOnenet(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -130,6 +139,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of usartTask */
   usartTaskHandle = osThreadNew(vTaskusartTask, NULL, &usartTask_attributes);
+
+  /* creation of Onenet */
+  OnenetHandle = osThreadNew(vTaskOnenet, NULL, &Onenet_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -215,11 +227,32 @@ void vTaskusartTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    HAL_usart_send("Hello FreeRTOS!\r\n");
+    HAL_usart_send(&huart3, "Hello FreeRTOS!\r\n");
 		osDelay(1000);
   }
 
   /* USER CODE END vTaskusartTask */
+}
+
+/* USER CODE BEGIN Header_vTaskOnenet */
+/**
+* @brief Function implementing the Onenet thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_vTaskOnenet */
+void vTaskOnenet(void *argument)
+{
+  /* USER CODE BEGIN vTaskOnenet */
+  HAL_usart_init(&huart3);
+  /* Infinite loop */
+  for(;;)
+  {
+    HAL_usart_send(&huart3, "Hello OneNet!\r\n");
+    ESP8266_Init();
+    osDelay(1);
+  }
+  /* USER CODE END vTaskOnenet */
 }
 
 /* Private application code --------------------------------------------------*/

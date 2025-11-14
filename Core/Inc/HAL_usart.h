@@ -6,8 +6,8 @@
 #include "stm32f1xx_hal.h"
 
 
-void HAL_usart_init(UART_HandleTypeDef *huart);
-void HAL_usart_send(char *str);
+HAL_StatusTypeDef HAL_usart_init(UART_HandleTypeDef *huart);
+void HAL_usart_send(UART_HandleTypeDef *huart, char *data);
 
 #ifdef __cplusplus
 }

@@ -45,3 +45,4 @@
 1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\math.h
 1_freertosf103_mx\freertos.o: ../Core/Inc/HAL_usart.h
 1_freertosf103_mx\freertos.o: ../Core/Inc/usart.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/esp8266.h
