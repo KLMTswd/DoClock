@@ -51,6 +51,9 @@
 
 
 double brightNess;    //鏄皬鐏殑浜害锛?1鏈?澶? 0鏈?灏?
+extern char PUBLIS_BUF[256];
+const char devPubTopic[] = "/sys/nw8lCCjUcu/System/thing/property/post";
+uint16_t TimeCount = 0;
 
 /* USER CODE END PM */
 
@@ -83,7 +86,7 @@ const osThreadAttr_t usartTask_attributes = {
 osThreadId_t OnenetHandle;
 const osThreadAttr_t Onenet_attributes = {
   .name = "Onenet",
-  .stack_size = 300 * 4,
+  .stack_size = 800 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for binarySem */
@@ -251,7 +254,7 @@ void vTaskOnenet(void *argument)
   /* USER CODE BEGIN vTaskOnenet */
 	
 // 在任务开始处 - 添加栈监控代码 
-  UBaseType_t uxHighWaterMark;
+  unsigned int uxHighWaterMark;
   uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
   char stack_info[64];
 
@@ -291,9 +294,18 @@ void vTaskOnenet(void *argument)
   /* Infinite loop */
   for(;;)
   {
+    /* 每5s进一次这个逻辑 */
+ 			if(TimeCount++ >= 100)
+			{
+					JsonValue();
+					OneNet_Publish(devPubTopic, PUBLIS_BUF);
+					ESP8266_Clear();
+					TimeCount = 0;
+					
+				
+			}								   
     
-    
-    osDelay(1);
+    osDelay(50);
   }
   /* USER CODE END vTaskOnenet */
 }

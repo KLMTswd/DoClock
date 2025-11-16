@@ -24,7 +24,9 @@ extern UART_HandleTypeDef huart3;
 
 #define ESP8266_ONENET_INFO		"AT+CIPSTART=\"TCP\",\"mqtts.heclouds.com\",1883\r\n"
 
+
 unsigned char esp8266_buf[512];
+char PUBLIS_BUF[256];
 unsigned short esp8266_cnt = 0, esp8266_cntPre = 0;
 
 extern UART_HandleTypeDef huart2;  // 声明huart2为外部变量，它应该在usart.c中定义
@@ -152,7 +154,7 @@ _Bool ESP8266_SendCmd(char *cmd, char *res)
 void ESP8266_SendData(unsigned char *data, unsigned short len)
 {
   // 用于存储AT命令的缓冲区
-    char cmdBuf[300];
+    char cmdBuf[150];
     
   // 清空ESP8266接收缓存，防止干扰新的通信过程
     ESP8266_Clear();
@@ -329,5 +331,39 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 				HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);
 				
   }
+}
+
+
+
+/**
+ * @brief 生成包含温湿度数据的JSON字符串
+ * 
+ * @details 该函数创建一个标准格式的JSON字符串，包含设备ID和温湿度传感器数据
+ 
+            用于ESP8266模块向服务器发送数据时使用
+ */
+void JsonValue()
+{
+    /* 局部变量定义 */
+
+  // 温度值(摄氏度)，范围通常为0-100
+  //  uint8_t Temp;  
+
+  // 湿度值(百分比)，范围通常为0-100     
+  //  uint8_t Hum = 60;  
+
+  /* 清空发布缓冲区，确保不会有之前的数据残留 */
+    memset(PUBLIS_BUF, 0, sizeof(PUBLIS_BUF));
+
+    /* 格式化JSON字符串
+
+       将温度和湿度数据填充到JSON模板中
+
+       JSON格式: {"id":"123","params":{"Temp":{"value":温度值},"Hum":{"value":湿度值}}}
+
+       其中:"123"是固定的设备ID，Temp和Hum分别表示温度和湿度数据点
+    */
+    sprintf(PUBLIS_BUF, "{\"id\":\"nw8lCCjUcu\",\"params\":{\"Led\":{\"value\":true }}}"); 
+  
 }
 

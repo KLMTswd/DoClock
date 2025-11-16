@@ -216,7 +216,7 @@ void OneNet_Publish(const char *topic, const char *msg)
     MQTT_PACKET_STRUCTURE mqttPacket = {NULL, 0, 0, 0};                         
     
   // 调试信息缓冲区，用于输出发布的主题和消息内容
-    char send_buffer[100];  
+    char send_buffer[256];  
 
   // 格式化调试信息
     sprintf(send_buffer, "Publish Topic: %s, Msg: %s\r\n", topic, msg);
@@ -259,8 +259,6 @@ void OneNet_Publish(const char *topic, const char *msg)
     }
   
 }
-
-
 //========================================================== 
 //  函数名称   OneNet_RevPro 
 // 

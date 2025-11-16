@@ -19,5 +19,6 @@ void ESP8266_SendData(unsigned char *data, unsigned short len);
 
 unsigned char *ESP8266_GetIPD(unsigned short timeOut);
 
+void JsonValue(void);
 
 #endif
