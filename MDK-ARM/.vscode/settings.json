@@ -5,6 +5,9 @@
         "stm32f1xx_hal.h": "c",
         "esp8266.h": "c",
         "string": "c",
-        "mqttkit.h": "c"
-    }
+        "mqttkit.h": "c",
+        "string.h": "c",
+        "onenet.h": "c"
+    },
+    "huile8.autoRefresh": false
 }

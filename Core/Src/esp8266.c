@@ -69,25 +69,19 @@ void ESP8266_Clear(void)
   */
 _Bool ESP8266_WaitRecive(void)
 {
-  // 如果接收计数为0，则说明没有处于接收数据中，直接返回等待状态
-    if(esp8266_cnt == 0)
-        return REV_WAIT;
-        
-  // 如果当前接收计数与上一次相同，则说明接收已经完成
-    if(esp8266_cnt == esp8266_cntPre)
-    {
-      // 清0接收计数，准备下一次接收
-        esp8266_cnt = 0;
-            
-      // 返回接收完成标志
-        return REV_OK;
-    }
-        
-  // 更新上一次接收计数为当前值
-    esp8266_cntPre = esp8266_cnt;
-    
-  // 返回接收未完成标志
-    return REV_WAIT;
+	if(esp8266_cnt == 0) 							//如果接收计数为0 则说明没有处于接收数据中，所以直接跳出，结束函数
+		return REV_WAIT;
+		
+	if(esp8266_cnt == esp8266_cntPre)				//如果上一次的值和这次相同，则说明接收完毕
+	{
+		esp8266_cnt = 0;							//清0接收计数
+			
+		return REV_OK;								//返回接收完成标志
+	}
+		
+	esp8266_cntPre = esp8266_cnt;					//置为相同
+	
+	return REV_WAIT;								//返回接收未完成标志
 }
 
 
@@ -158,7 +152,7 @@ _Bool ESP8266_SendCmd(char *cmd, char *res)
 void ESP8266_SendData(unsigned char *data, unsigned short len)
 {
   // 用于存储AT命令的缓冲区
-    char cmdBuf[32];
+    char cmdBuf[300];
     
   // 清空ESP8266接收缓存，防止干扰新的通信过程
     ESP8266_Clear();
@@ -171,8 +165,7 @@ void ESP8266_SendData(unsigned char *data, unsigned short len)
     {
 			
       // 收到'>'提示符后，通过USART2发送实际的数据内容
-        HAL_usart_send(&huart2, (char *)data);
-			
+       HAL_UART_Transmit(&huart2, data, len, 100);
     }
 }
 
@@ -192,20 +185,23 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 {
   /* 定义指针用于定位IPD头信息 */
     char *ptrIPD = NULL;
-    
+    ESP8266_Clear();
+
+
   /* 在超时时间内循环检测接收缓冲区 */
     do
-    {
+    { 
+
 			 // 如果接收完成
         if(ESP8266_WaitRecive() == REV_OK)                             
         {
 					// 搜索"IPD"头
-            ptrIPD = strstr((char *)esp8266_buf, "IPD,");     
+            ptrIPD = strstr((char *)esp8266_buf, "IPD," );     
 					// 如果没找到，可能是IPD头的延迟
             if(ptrIPD == NULL)                                          
             {
 							// 调试输出：未找到IPD头
-                HAL_usart_send(&huart2, "\"IPD\" not found\r\n");     
+                HAL_usart_send(&huart3, "\"IPD\" not found\r\n");     
             }
             else
             {
@@ -216,7 +212,7 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
 									// 移动指针到数据内容起始位置
                     ptrIPD++;   
 									
-									// 返回指向数据内容的指针
+									// 返回指向数据内容的指针  
                     return (unsigned char *)(ptrIPD);                  
                 }
                 
@@ -266,13 +262,16 @@ unsigned char *ESP8266_GetIPD(unsigned short timeOut)
   */
 void ESP8266_Init(void)
 {
+  // 启动USART2的中断接收，准备接收数据
+    HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);
+    
   /* 清空ESP8266接收缓冲区，准备初始化 */
     ESP8266_Clear();
     
   /* 1. 测试AT指令，确认模块正常工作 */
     HAL_usart_send(&huart3, "1. AT\r\n");
     while(ESP8266_SendCmd("AT\r\n", "OK"))
-    HAL_Delay(500);
+    osDelay(500);
     
   /* 2. 设置ESP8266为Station模式(模式1) */
     HAL_usart_send(&huart3, "2. CWMODE\r\n");
@@ -296,9 +295,7 @@ void ESP8266_Init(void)
     
   /* 初始化完成，输出成功信息 */
     HAL_usart_send(&huart3, "6. ESP8266 Init OK\r\n");
-
-  // 前面已经完成对ESP8266的初始化，启动USART2的中断接收，准备接收数据
-    HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);  
+     
 }
 
 /**
@@ -326,12 +323,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			
 			/* 将接收到的一个字节数据存入esp8266缓冲区 */
 				esp8266_buf[esp8266_cnt++] = aRxBuffer;
-				
+				aRxBuffer = 0; 
+
 			/* 重新启动中断接收，这是HAL库的关键：每次接收完成后需要重新开启中断 */
 				HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);
 				
   }
 }
-
-
 

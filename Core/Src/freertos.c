@@ -29,6 +29,10 @@
 #include "HAL_usart.h"
 #include "usart.h"
 #include "esp8266.h"
+#include "onenet.h"
+#include "Mqttkit.h"
+#include "stdio.h"
+
 
 /* USER CODE END Includes */
 
@@ -46,7 +50,7 @@
 /* USER CODE BEGIN PM */
 
 
-double brightNess;//鏄皬鐏殑浜害锛?1鏈?澶? 0鏈?灏?
+double brightNess;    //鏄皬鐏殑浜害锛?1鏈?澶? 0鏈?灏?
 
 /* USER CODE END PM */
 
@@ -79,7 +83,7 @@ const osThreadAttr_t usartTask_attributes = {
 osThreadId_t OnenetHandle;
 const osThreadAttr_t Onenet_attributes = {
   .name = "Onenet",
-  .stack_size = 128 * 4,
+  .stack_size = 300 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for binarySem */
@@ -222,13 +226,13 @@ void vTaskScan(void *argument)
 void vTaskusartTask(void *argument)
 {
   /* USER CODE BEGIN vTaskusartTask */
-  HAL_usart_init(&huart3);
+
 
   /* Infinite loop */
   for(;;)
   {
-    HAL_usart_send(&huart3, "Hello FreeRTOS!\r\n");
-		osDelay(1000);
+  
+		osDelay(1);
   }
 
   /* USER CODE END vTaskusartTask */
@@ -238,18 +242,57 @@ void vTaskusartTask(void *argument)
 /**
 * @brief Function implementing the Onenet thread.
 * @param argument: Not used
+
 * @retval None
 */
 /* USER CODE END Header_vTaskOnenet */
 void vTaskOnenet(void *argument)
 {
   /* USER CODE BEGIN vTaskOnenet */
-  HAL_usart_init(&huart3);
+	
+// 在任务开始处 - 添加栈监控代码 
+  UBaseType_t uxHighWaterMark;
+  uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+  char stack_info[64];
+
+  HAL_usart_send(&huart3, "网络连接中\r\n");
+  ESP8266_Init();
+  HAL_Delay(1000);
+  
+  // 一个OneNet平台连接重试循环
+	
+  // OneNet_DevLink()函数：尝试连接到中国移动OneNet物联网平台
+
+  // 返回值：连接失败返回非零值，连接成功返回0
+
+  while(OneNet_DevLink())
+  {
+    // 连接失败后，延时500毫秒再次尝试连接
+      osDelay(500); 
+
+    // 检查栈使用情况
+      uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+      sprintf(stack_info, "连接中栈剩余: %u\r\n", uxHighWaterMark);
+      HAL_usart_send(&huart3, stack_info);
+
+		
+  }
+
+  HAL_usart_send(&huart3, "网络连接成功\r\n");
+
+// 连接成功后再次检查栈使用情况
+  uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
+  sprintf(stack_info, "连接成功后栈剩余: %u\r\n", uxHighWaterMark);
+  HAL_usart_send(&huart3, stack_info);
+
+  osDelay(3000);
+
+
   /* Infinite loop */
   for(;;)
   {
-    HAL_usart_send(&huart3, "Hello OneNet!\r\n");
-    ESP8266_Init();
+    
+    
     osDelay(1);
   }
   /* USER CODE END vTaskOnenet */

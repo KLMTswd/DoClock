@@ -60,7 +60,7 @@ _Bool OneNet_DevLink(void)
   // MQTT数据包结构体
     MQTT_PACKET_STRUCTURE mqttPacket = {NULL, 0, 0, 0}; 
   // 指向接收数据的指针
-    unsigned char *dataPtr;  
+    unsigned char *dataPtr = NULL ;  
 
   // 连接状态，初始为失败	             
     _Bool status = 1;           
@@ -69,7 +69,7 @@ _Bool OneNet_DevLink(void)
   /* 打印调试信息，显示连接参数  */  
   
   // 根据实际需要调整缓冲区大小 
- 	char send_buffer[128];  
+ 	  char send_buffer[300];  
     sprintf(send_buffer, "OneNet_DevLink\r\nPROID: %s,\tTOKEN: %s, DEVID:%s\r\n", PROID, TOKEN, DEVID);
     HAL_usart_send(&huart3, send_buffer);
     
@@ -126,7 +126,7 @@ _Bool OneNet_DevLink(void)
     else
     {
       // MQTT连接数据包构建失败
-        HAL_usart_send(&huart3, "WARN:\tMQTT_PacketConnect Failed\r\n");
+        HAL_usart_send(&huart3, "WARN: MQTT_PacketConnect Failed\r\n");
     }
     
   // 返回连接状态
@@ -308,8 +308,9 @@ void OneNet_RevPro(unsigned char *cmd)
     short result = 0;      
 
   // JSON解析对象指针
-    cJSON *json, *params_json;      
-
+    cJSON *json ;
+		cJSON *params_json __attribute__((unused));		
+		
     // char *dataPtr = NULL;         // 预留变量，未使用
     // char numBuf[10];              // 预留变量，未使用
     // int num = 0;                  // 预留变量，未使用
@@ -449,3 +450,4 @@ void OneNet_RevPro(unsigned char *cmd)
         MQTT_FreeBuffer(req_payload);
     }
 }
+

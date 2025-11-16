@@ -46,3 +46,8 @@
 1_freertosf103_mx\freertos.o: ../Core/Inc/HAL_usart.h
 1_freertosf103_mx\freertos.o: ../Core/Inc/usart.h
 1_freertosf103_mx\freertos.o: ../Core/Inc/esp8266.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/onenet.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/Mqttkit.h
+1_freertosf103_mx\freertos.o: ../Core/Inc/Common.h
+1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\stdlib.h
+1_freertosf103_mx\freertos.o: E:\Keil5_Pro\ARM\ARMCC\Bin\..\include\stdio.h
