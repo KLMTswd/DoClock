@@ -15,5 +15,7 @@ void OneNet_RevPro(unsigned char *cmd);
 
 void OneNet_Publish(const char *topic, const char *msg);
 
+uint8_t OneNet_Ping(void);
+
 
 #endif

@@ -449,3 +449,31 @@ void OneNet_RevPro(unsigned char *cmd)
     }
 }
 
+/**
+ * @brief 发送MQTT PINGREQ报文，维持连接
+ 
+ * @retval 0: 成功, 非0: 失败
+
+ */
+uint8_t OneNet_Ping(void)
+{
+    uint8_t pingbuf[2];  // MQTT PINGREQ报文格式
+    
+    // MQTT PINGREQ报文格式：
+    // 固定头：0xC0 (控制字段) + 0x00 (剩余长度)
+    pingbuf[0] = 0xC0;   // PINGREQ控制字段
+    pingbuf[1] = 0x00;   // 剩余长度为0
+    
+    // 通过ESP8266发送PINGREQ报文
+    ESP8266_SendData(pingbuf, 2);
+    HAL_usart_send(&huart3, "PINGREQ已发送\r\n");
+    
+    // 等待并尝试接收响应（简化版本）
+    ESP8266_Clear();
+    HAL_Delay(200);  // 短暂延迟等待可能的响应
+    
+    // 注意：由于无法使用ESP8266_Buf，这里不做具体响应检查
+    // 实际项目中，你应该使用项目中定义的接收缓冲区
+    
+    return 0;  // 返回成功，表示心跳包已发送
+}

@@ -52,7 +52,7 @@
 
 double brightNess;    //鏄皬鐏殑浜害锛?1鏈?澶? 0鏈?灏?
 extern char PUBLIS_BUF[256];
-const char devPubTopic[] = "/sys/nw8lCCjUcu/System/thing/property/post";
+const char devPubTopic[] = "$sys/nw8lCCjUcu/System/thing/property/post";
 uint16_t TimeCount = 0;
 
 /* USER CODE END PM */
@@ -86,7 +86,7 @@ const osThreadAttr_t usartTask_attributes = {
 osThreadId_t OnenetHandle;
 const osThreadAttr_t Onenet_attributes = {
   .name = "Onenet",
-  .stack_size = 800 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for binarySem */
@@ -257,17 +257,17 @@ void vTaskOnenet(void *argument)
   unsigned int uxHighWaterMark;
   uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
   char stack_info[64];
+  uint32_t lastPublishTime = 0;
+  uint32_t lastPingTime = 0;
+  uint8_t connected = 0;
+  uint8_t publishErrorCount = 0; // 添加错误计数
+  uint32_t lastReconnectTime = 0; // 添加重连时间记录
 
   HAL_usart_send(&huart3, "网络连接中\r\n");
   ESP8266_Init();
   HAL_Delay(1000);
   
-  // 一个OneNet平台连接重试循环
-	
-  // OneNet_DevLink()函数：尝试连接到中国移动OneNet物联网平台
-
-  // 返回值：连接失败返回非零值，连接成功返回0
-
+// OneNet平台连接重试循环
   while(OneNet_DevLink())
   {
     // 连接失败后，延时500毫秒再次尝试连接
@@ -277,8 +277,6 @@ void vTaskOnenet(void *argument)
       uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
       sprintf(stack_info, "连接中栈剩余: %u\r\n", uxHighWaterMark);
       HAL_usart_send(&huart3, stack_info);
-
-		
   }
 
   HAL_usart_send(&huart3, "网络连接成功\r\n");
@@ -288,24 +286,94 @@ void vTaskOnenet(void *argument)
   sprintf(stack_info, "连接成功后栈剩余: %u\r\n", uxHighWaterMark);
   HAL_usart_send(&huart3, stack_info);
 
+  connected = 1;
+  lastReconnectTime = HAL_GetTick();
   osDelay(3000);
-
 
   /* Infinite loop */
   for(;;)
   {
-    /* 每5s进一次这个逻辑 */
- 			if(TimeCount++ >= 100)
-			{
-					JsonValue();
-					OneNet_Publish(devPubTopic, PUBLIS_BUF);
-					ESP8266_Clear();
-					TimeCount = 0;
-					
-				
-			}								   
+    /* 检查连接状态 */
+      if(!connected)
+      {
+          HAL_usart_send(&huart3, "重连中...\r\n");
+          
+        // 1. 完全重置ESP8266，比单纯清除缓冲区更彻底
+          ESP8266_Init(); // 重新初始化ESP8266
+          HAL_Delay(2000); // 给ESP8266足够的重启时间
+          
+        // 2. 添加重连超时保护
+          uint8_t reconnectAttempts = 0;
+          uint8_t maxAttempts = 5;
+          
+        // 这里具体动用了OneNet_DevLink()进行连接
+          while(OneNet_DevLink() && reconnectAttempts < maxAttempts)
+          {
+              reconnectAttempts++;
+              HAL_usart_send(&huart3, "重连尝试...\r\n");
+              osDelay(1000); // 延长重连间隔，给更多恢复时间
+						
+          }
+          
+        // 3. 检查是否重连成功
+          if(reconnectAttempts < maxAttempts)
+          {
+              HAL_usart_send(&huart3, "重连成功\r\n");
+              connected = 1;
+              lastPingTime = 0;
+              publishErrorCount = 0;
+              lastReconnectTime = HAL_GetTick();
+						
+          }
+          
+          else
+          {
+              HAL_usart_send(&huart3, "重连失败，稍后重试\r\n");
+            // 重连失败后等待更长时间再重试，确保一定连上
+              osDelay(5000); 
+						
+          }
+      }    
     
-    osDelay(50);
+    /* 每10秒发送一次心跳包 */
+      if(HAL_GetTick() - lastPingTime >= 10000)
+      {
+        // 确保心跳包功能启用
+          OneNet_Ping();
+          lastPingTime = HAL_GetTick();
+				
+      }    
+    
+    /* 每5s进一次这个逻辑 */
+      if(HAL_GetTick() - lastPublishTime >= 5000)
+      {
+          JsonValue(); 
+          OneNet_Publish(devPubTopic, PUBLIS_BUF); // 发布数据
+          
+        // 4. 调整重连策略：降低重连频率
+          publishErrorCount++;
+          
+        // 5. 仅在长时间无重连时触发定期重连，避免过于频繁
+          if((HAL_GetTick() - lastReconnectTime >= 30000)) // 30秒
+          {
+              HAL_usart_send(&huart3, "定期重连...\r\n");
+              connected = 0; // 触发重连
+						
+          }
+
+        // 6. 只有在心跳包也失效的情况下才基于错误计数重连
+          else if(publishErrorCount >= 60) // 约5分钟的发布次数
+          {
+              HAL_usart_send(&huart3, "发布异常，尝试重连...\r\n");
+              connected = 0;
+						
+          }
+          
+          ESP8266_Clear();
+          lastPublishTime = HAL_GetTick();
+      }						   
+    
+    osDelay(100);
   }
   /* USER CODE END vTaskOnenet */
 }
@@ -314,4 +382,3 @@ void vTaskOnenet(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-

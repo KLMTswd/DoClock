@@ -361,9 +361,9 @@ void JsonValue()
 
        JSON格式: {"id":"123","params":{"Temp":{"value":温度值},"Hum":{"value":湿度值}}}
 
-       其中:"123"是固定的设备ID，Temp和Hum分别表示温度和湿度数据点
+       其中:"123"一定一定是固定的设备ID（千万别改成自己的ID了），Temp和Hum分别表示温度和湿度数据点
     */
-    sprintf(PUBLIS_BUF, "{\"id\":\"nw8lCCjUcu\",\"params\":{\"Led\":{\"value\":true }}}"); 
+    sprintf(PUBLIS_BUF, "{\"id\":\"123\",\"params\":{\"Led\":{\"value\":true }}}"); 
   
 }
 
